@@ -22,34 +22,34 @@ jobs:
     # Étape 3 : Construire l'image Docker
     - name: Build Docker image
       run: |
-        docker build -t collecte:latest .
+        docker build -t collecte:${{ github.sha }} .
 
     # Étape 4 : Archiver l'image Docker
     - name: Save Docker image as tar
       run: |
-        docker save collecte:latest -o collecte.tar
-      # Sauvegarder l'archive pour le transfert
-      id: save
+        docker save collecte:${{ github.sha }} -o collecte.tar
 
     # Étape 5 : Transférer l'image Docker sur le VPS
     - name: Upload Docker image to VPS
       uses: appleboy/scp-action@v0.1.5
       with:
-        host: ${{ secrets.SECRET_HOST }}
-        username: ${{ secrets.SECRET_USERNAME }}
-        password: ${{ secrets.SECRET_PASSWORD }}
+        host: ${{ secrets.SERVER_HOST }}
+        username: ${{ secrets.SERVER_USERNAME }}
+        password: ${{ secrets.SERVER_PASSWORD }}
         source: collecte.tar
-        target: /home/${{ secrets.SECRET_USERNAME }}/collecte.tar
+        target: /home/${{ secrets.SERVER_USERNAME }}/collecte.tar
 
     # Étape 6 : Charger et exécuter l'image sur le VPS
     - name: Deploy on VPS
       uses: appleboy/ssh-action@v0.1.10
       with:
-        host: ${{ secrets.VPS_HOST }}
-        username: ${{ secrets.SECRET_USERNAME }}
-        password: ${{ secrets.SECRET_PASSWORD }}
+        host: ${{ secrets.SERVER_HOST }}
+        username: ${{ secrets.SERVER_USERNAME }}
+        password: ${{ secrets.SERVER_PASSWORD }}
         script: |
-          docker load -i /home/${{ secrets.SECRET_USERNAME }}/collecte.tar
+          docker load -i /home/${{ secrets.SERVER_USERNAME }}/collecte.tar
+          rm -f /home/${{ secrets.SERVER_USERNAME }}/collecte.tar
           docker stop collecte || true
           docker rm collecte || true
-          docker run -d --name collecte -p 5000:8080 collecte:latest
+          docker image prune -f || true
+          docker run -d --name collecte -p 5000:5000 collecte:${{ github.sha }}
