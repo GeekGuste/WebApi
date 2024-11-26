@@ -29,6 +29,9 @@ jobs:
       run: |
         docker save collecte:${{ github.sha }} -o collecte.tar
 
+    - name: Verify file existence
+      run: ls -l /tmp/collecte.tar
+
     # Étape 5 : Transférer l'image Docker sur le VPS
     - name: Upload Docker image to VPS
       uses: appleboy/scp-action@v0.1.5
