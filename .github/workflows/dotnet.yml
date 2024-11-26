@@ -33,18 +33,6 @@ jobs:
         name: docker-image
         path: collecte.tar
 
-    # Étape 5 : Transférer l'image Docker sur le VPS
-    - name: Upload Docker image to VPS
-      uses: appleboy/scp-action@v0.1.5
-      with:
-        host: ${{ secrets.SERVER_HOST }}
-        username: ${{ secrets.SERVER_USER }}
-        password: ${{ secrets.SERVER_PASSWORD }}
-        source: collecte.tar
-        target: /home/${{ secrets.SERVER_USERNAME }}/collecte.tar
-        tar_exec: false
-
-    # Étape 6 : Charger et exécuter l'image sur le VPS
     - uses: actions/download-artifact@v3
       with:
         name: docker-image
