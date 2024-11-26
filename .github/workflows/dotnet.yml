@@ -27,7 +27,6 @@ jobs:
     # Étape 4 : Archiver l'image Docker
     - name: Save Docker image as tar
       run: |
-         sudo chmod 777 /tmp
          docker save collecte:latest -o /tmp/collecte.tar
 
     - name: Verify file existence
