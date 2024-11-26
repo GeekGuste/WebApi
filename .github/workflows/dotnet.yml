@@ -44,7 +44,7 @@ jobs:
         # Se connecter au serveur pour effectuer le déploiement
         sshpass -p "${SERVER_PASSWORD}" ssh -o StrictHostKeyChecking=no ${SERVER_USER}@${SERVER_HOST} << EOF
           # Naviguer dans le dossier de l'application
-          cd /www
+          cd /
           
           # Exécuter des commandes spécifiques au déploiement
           # Par exemple : redémarrer un service
