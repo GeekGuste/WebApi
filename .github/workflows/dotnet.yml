@@ -1,8 +1,6 @@
 # This workflow will build a .NET project
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
 
-name: .NET
-
 on:
   push:
     branches: [ "master" ]
@@ -20,16 +18,37 @@ jobs:
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
+
     - name: Restore dependencies
       run: dotnet restore
+
     - name: Build
       run: dotnet build --no-restore
+
     - name: Test
       run: dotnet test --no-build --verbosity normal
-    - name: SSH into server and deploy application
+
+    - name: Package application
       run: |
-        sshpass -p "${{ secrets.SERVER_PASSWORD }}" ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << EOF
-          pwd
-    - name: Navigation dans le repo
+        dotnet publish -c Release -o ./out
+
+    - name: Deploy application to server
+      env:
+        SERVER_HOST: ${{ secrets.SERVER_HOST }}
+        SERVER_USER: ${{ secrets.SERVER_USER }}
+        SERVER_PASSWORD: ${{ secrets.SERVER_PASSWORD }}
       run: |
-        pwd
+        # Copier les fichiers publiés sur le serveur
+        sshpass -p "${SERVER_PASSWORD}" scp -o StrictHostKeyChecking=no -r ./out/* ${SERVER_USER}@${SERVER_HOST}:/www
+
+        # Se connecter au serveur pour effectuer le déploiement
+        sshpass -p "${SERVER_PASSWORD}" ssh -o StrictHostKeyChecking=no ${SERVER_USER}@${SERVER_HOST} << EOF
+          # Naviguer dans le dossier de l'application
+          cd /www
+          
+          # Exécuter des commandes spécifiques au déploiement
+          # Par exemple : redémarrer un service
+          # systemctl restart your-service-name
+
+          echo "Déploiement terminé avec succès."
+        EOF
