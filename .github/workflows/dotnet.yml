@@ -40,7 +40,7 @@ jobs:
       run: docker load < collecte.tar
     - name: Deploy to server
       run: |
-          ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} -p 22 -o StrictHostKeyChecking=no <<<"$SSH_PASSWORD" "
+          ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} -p 22 -o StrictHostKeyChecking=no <<<"${{ secrets.SERVER_PASSWORD }}" "
             docker stop collecte-container || true
             docker rm collecte-container || true
             docker load < collecte.tar
