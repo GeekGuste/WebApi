@@ -27,10 +27,10 @@ jobs:
     # Étape 4 : Archiver l'image Docker
     - name: Save Docker image as tar
       run: |
-         docker save collecte:latest -o /tmp/collecte.tar
+         docker save collecte:latest -o collecte.tar
 
     - name: Verify file existence
-      run: ls -l /tmp/collecte.tar
+      run: ls -l collecte.tar
 
     # Étape 5 : Transférer l'image Docker sur le VPS
     - name: Upload Docker image to VPS
@@ -39,7 +39,7 @@ jobs:
         host: ${{ secrets.SERVER_HOST }}
         username: ${{ secrets.SERVER_USER }}
         password: ${{ secrets.SERVER_PASSWORD }}
-        source: /tmp/collecte.tar
+        source: collecte.tar
         target: /home/${{ secrets.SERVER_USERNAME }}/collecte.tar
         tar_exec: false
 
