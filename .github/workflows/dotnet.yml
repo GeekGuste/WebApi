@@ -27,7 +27,7 @@ jobs:
     # Étape 4 : Archiver l'image Docker
     - name: Save Docker image as tar
       run: |
-        docker save collect:latest -o yourapp.tar
+        docker save collecte:latest -o collecte.tar
       # Sauvegarder l'archive pour le transfert
       id: save
 
