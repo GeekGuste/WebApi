@@ -27,7 +27,6 @@ jobs:
     # Étape 4 : Archiver l'image Docker
     - name: Save Docker image as tar
       run: |
-        sudo chmod 777 .
         docker save collecte:${{ github.sha }} -o collecte.tar
 
     # Étape 5 : Transférer l'image Docker sur le VPS
@@ -39,6 +38,7 @@ jobs:
         password: ${{ secrets.SERVER_PASSWORD }}
         source: collecte.tar
         target: /home/${{ secrets.SERVER_USERNAME }}/collecte.tar
+        rm: false
 
     # Étape 6 : Charger et exécuter l'image sur le VPS
     - name: Deploy on VPS
