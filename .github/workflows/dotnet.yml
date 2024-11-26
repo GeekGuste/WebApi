@@ -23,14 +23,17 @@ jobs:
     - name: Build Docker image
       run: |
         docker build -t collecte:${{ github.sha }} .
+        docker images | grep collecte || echo "Image collecte:latest not found"
 
     # Étape 4 : Archiver l'image Docker
+    - name: Verify Docker image exists
+      run: |
+        docker images
+        docker inspect collecte:latest || echo "Image does not exist"
+
     - name: Save Docker image as tar
       run: |
-         docker save collecte:latest -o collecte.tar
-
-    - name: Verify file existence
-      run: ls -l collecte.tar
+        docker save collecte:latest -o collecte.tar
 
     # Étape 5 : Transférer l'image Docker sur le VPS
     - name: Upload Docker image to VPS
