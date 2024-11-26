@@ -28,7 +28,8 @@ jobs:
       run: dotnet test --no-build --verbosity normal
     - name: SSH into server and deploy application
       run: |
-        sshpass -p "${{ secrets.SERVER_PASSWORD }}" ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}
+        sshpass -p "${{ secrets.SERVER_PASSWORD }}" ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << EOF
+          pwd
     - name: Navigation dans le repo
       run: |
         pwd
