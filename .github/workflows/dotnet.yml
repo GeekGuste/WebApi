@@ -39,7 +39,7 @@ jobs:
         SERVER_PASSWORD: ${{ secrets.SERVER_PASSWORD }}
       run: |
         # Copier les fichiers publiés sur le serveur
-        sshpass -p "${SERVER_PASSWORD}" scp -o StrictHostKeyChecking=no -r ./out/* ${SERVER_USER}@${SERVER_HOST}:/www
+        sshpass -p "${SERVER_PASSWORD}" scp -o StrictHostKeyChecking=no -r ./out/* ${SERVER_USER}@${SERVER_HOST}:/
 
         # Se connecter au serveur pour effectuer le déploiement
         sshpass -p "${SERVER_PASSWORD}" ssh -o StrictHostKeyChecking=no ${SERVER_USER}@${SERVER_HOST} << EOF
