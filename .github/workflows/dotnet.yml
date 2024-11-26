@@ -17,23 +17,21 @@ jobs:
 
     # Étape 2 : Configurer Docker
     - name: Set up Docker
-      uses: docker/setup-buildx-action@v2
+      uses: docker/setup-buildx-action@v3
 
     # Étape 3 : Construire l'image Docker
     - name: Build Docker image
       run: |
-        docker build -t collecte:${{ github.sha }} .
-        docker images | grep collecte || echo "Image collecte:latest not found"
+        docker build -t collecte .
 
     # Étape 4 : Archiver l'image Docker
-    - name: Verify Docker image exists
-      run: |
-        docker images
-        docker inspect collecte:latest || echo "Image does not exist"
-
     - name: Save Docker image as tar
       run: |
-        docker save collecte:latest -o collecte.tar
+        docker save collecte > collecte.tar
+    - uses: actions/upload-artifact@v3
+      with:
+        name: docker-image
+        path: collecte.tar
 
     # Étape 5 : Transférer l'image Docker sur le VPS
     - name: Upload Docker image to VPS
@@ -47,16 +45,15 @@ jobs:
         tar_exec: false
 
     # Étape 6 : Charger et exécuter l'image sur le VPS
-    - name: Deploy on VPS
-      uses: appleboy/ssh-action@v0.1.10
+    - uses: actions/download-artifact@v3
       with:
-        host: ${{ secrets.SERVER_HOST }}
-        username: ${{ secrets.SERVER_USER }}
-        password: ${{ secrets.SERVER_PASSWORD }}
-        script: |
-          docker load -i /home/${{ secrets.SERVER_USER }}/collecte.tar
-          rm -f /home/${{ secrets.SERVER_USER }}/collecte.tar
-          docker stop collecte || true
-          docker rm collecte || true
-          docker image prune -f || true
-          docker run -d --name collecte -p 5000:5000 collecte:${{ github.sha }}
+        name: docker-image
+    - name: Load the Docker image
+      run: docker load < collecte.tar
+    - name: Deploy to server
+      run: |
+          ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} -p 22 -o StrictHostKeyChecking=no <<<"$SSH_PASSWORD" "
+            docker stop collecte-container || true
+            docker rm collecte-container || true
+            docker load < collecte.tar
+            docker run -d --name collecte-container collecte
