@@ -38,10 +38,16 @@ jobs:
         name: docker-image
     - name: Load the Docker image
       run: docker load < collecte.tar
-    - name: Deploy to server
-      run: |
-          ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} -p 22 -o StrictHostKeyChecking=no <<<"${{ secrets.SERVER_PASSWORD }}" "
-            docker stop collecte-container || true
-            docker rm collecte-container || true
-            docker load < collecte.tar
-            docker run -d --name collecte-container collecte
+    - name: Deploy on VPS
+      uses: appleboy/ssh-action@v0.1.10
+      with:
+        host: ${{ secrets.SERVER_HOST }}
+        username: ${{ secrets.SERVER_USERNAME }}
+        password: ${{ secrets.SERVER_PASSWORD }}
+        script: |
+          set -e
+          docker stop collecte-container || true
+          docker rm collecte-container || true
+          docker load < /home/${{ secrets.SERVER_USER }}/collecte.tar
+          docker run -d --name collecte-container -p 5000:5000 collecte:latest
+          rm -f /home/${{ secrets.SERVER_USERNAME }}/collecte.tar
