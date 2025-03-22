@@ -13,7 +13,7 @@ jobs:
     steps:
     # Étape 1 : Récupérer le code
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     # Étape 2 : Configurer Docker
     - name: Set up Docker
@@ -33,7 +33,7 @@ jobs:
         name: docker-image
         path: collecte.tar
 
-    - uses: actions/download-artifact@v3
+    - uses: actions/download-artifact@v4
       with:
         name: docker-image
     - name: Load the Docker image
