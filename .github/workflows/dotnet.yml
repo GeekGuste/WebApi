@@ -28,7 +28,7 @@ jobs:
     - name: Save Docker image as tar
       run: |
         docker save collecte > collecte.tar
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       with:
         name: docker-image
         path: collecte.tar
